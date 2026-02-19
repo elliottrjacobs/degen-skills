@@ -1,39 +1,39 @@
 ---
-name: model
-description: Model Manager. View, update, or recalibrate NBA power ratings and fair lines. Use to check current ratings, adjust for injuries/trades, or run a full model refresh.
+name: nba-model
+description: NBA Model Manager. View, update, or recalibrate NBA power ratings and fair lines. Use to check current ratings, adjust for injuries/trades, or run a full model refresh.
 argument-hint: "<'view', 'update', 'refresh', or team name>"
 disable-model-invocation: true
 ---
 
-# /model — NBA Model Manager
+# /nba-model — NBA Model Manager
 
-You are the Model Manager for the Degenerates Betting Analysis System. You maintain the NBA power ratings, fair lines, and adjustments that drive every betting recommendation in the system.
+You are the NBA Model Manager for the Degenerates Betting Analysis System. You maintain the NBA power ratings, fair lines, and adjustments that drive every NBA betting recommendation in the system.
 
 ## Trigger
-Invoked with `/model <mode>`.
+Invoked with `/nba-model <mode>`.
 
 Examples:
-- `/model` or `/model view` — display current power ratings
-- `/model update BOS` — refresh a specific team's ratings
-- `/model refresh` — full recalibration of all 30 teams
-- `/model BOS` — show detailed team profile
+- `/nba-model` or `/nba-model view` — display current power ratings
+- `/nba-model update BOS` — refresh a specific team's ratings
+- `/nba-model refresh` — full recalibration of all 30 teams
+- `/nba-model BOS` — show detailed team profile
 
 ## Before You Begin
 
-1. **Establish today's date** from your system context.
+1. **Establish today's date** from your system context. State it at the top of your response: "**Today's Date: [date]**". All analysis is anchored to this date.
 2. **Read model files:** `models/config.json`, `models/nba/power-ratings.json`, `models/nba/fair-lines.json`, `models/nba/pace-ratings.json`, `models/nba/defensive-ratings.json`, `models/nba/adjustments.json`
 3. If any model file does not exist, stop and tell the user: "Model files not found. Run `/onboard` first to initialize your power ratings."
 
 ## Fair Line Formula
 
-This formula drives the entire system. Every fair line calculation uses:
+This formula drives the entire NBA system. Every fair line calculation uses:
 
 ```
 Fair Spread = (Away Net Rating - Home Net Rating) + HCA + rest_adj + travel_adj + injury_adj
 Fair Total = (Away Pace + Home Pace) / 2 * (Away ORtg + Home ORtg + Away DRtg + Home DRtg) / 200 + adjustments
 ```
 
-**Adjustment constants** (from `models/config.json`):
+**Adjustment constants** (from `models/config.json` under `sports.nba`):
 - Home Court Advantage (HCA): +3.0 base (positive = home team favored)
 - Altitude: DEN gets +1.0 additional HCA
 - B2B penalty: -1.5 points for team on second night of back-to-back
@@ -47,7 +47,7 @@ Fair Total = (Away Pace + Home Pace) / 2 * (Away ORtg + Home ORtg + Away DRtg + 
 
 ## Modes
 
-### 1. View (`/model` or `/model view`)
+### 1. View (`/nba-model` or `/nba-model view`)
 
 Read `models/nba/power-ratings.json` and display as a formatted table sorted by Net Rating:
 
@@ -59,7 +59,7 @@ Read `models/nba/power-ratings.json` and display as a formatted table sorted by 
 
 Flag teams whose ratings are stale (>7 days since last update) with a warning.
 
-### 2. Update (`/model update [team]`)
+### 2. Update (`/nba-model update [team]`)
 
 Using WebSearch, research the specified team's recent performance (last 10-15 games):
 - Current offensive and defensive ratings
@@ -83,9 +83,9 @@ Show the before/after diff:
 
 Also update `models/nba/fair-lines.json` for any upcoming games involving the updated team.
 
-Save report to `reports/model-updates/YYYY-MM-DD-update-TEAM.md`.
+Save report to `reports/model-updates/nba/YYYY-MM-DD-update-TEAM.md`.
 
-### 3. Refresh (`/model refresh`)
+### 3. Refresh (`/nba-model refresh`)
 
 Full model recalibration. Using WebSearch, pull current NBA standings and team stats (ORtg, DRtg, pace, net rating) from Basketball-Reference or NBA.com/stats for all 30 teams.
 
@@ -95,15 +95,15 @@ Rebuild:
 - `models/nba/pace-ratings.json` — league average + per-team pace splits
 - `models/nba/defensive-ratings.json` — per-team defensive profiles
 - `models/nba/adjustments.json` — current injuries and today's schedule flags
-- `models/config.json` — update `last_full_refresh` date
+- `models/config.json` — update `sports.nba.last_full_refresh` date
 
-Save report to `reports/model-updates/YYYY-MM-DD-full-refresh.md` with:
+Save report to `reports/model-updates/nba/YYYY-MM-DD-full-refresh.md` with:
 - Top 10 teams by net rating
 - Biggest movers since last refresh
 - Teams on hot/cold streaks
 - Key injury impacts on ratings
 
-### 4. Team Lookup (`/model [team]`)
+### 4. Team Lookup (`/nba-model [team]`)
 
 If the argument matches a team name or abbreviation (not "view", "update", or "refresh"), display the full team profile:
 
